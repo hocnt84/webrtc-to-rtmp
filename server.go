@@ -10,7 +10,6 @@ import (
 	rtmppusher "github.com/hocnt84/webrtc-to-rtmp/rtmp"
 	"github.com/joho/godotenv"
 	mediaserver "github.com/notedit/media-server-go"
-	"github.com/notedit/rtmp-lib/pubsub"
 	"github.com/notedit/sdp"
 )
 
@@ -68,7 +67,7 @@ func channel(c *gin.Context) {
 	defer ws.Close()
 
 	var transport *mediaserver.Transport
-	endpoint := mediaserver.NewEndpoint("127.0.0.1")
+	endpoint := mediaserver.NewEndpoint(os.Getenv("media_host"))
 
 	for {
 		// read json
@@ -104,7 +103,7 @@ func channel(c *gin.Context) {
 				outgoingStream.AttachTo(incomingStream)
 				answer.AddStream(outgoingStream.GetStreamInfo())
 
-				pusher, err := rtmppusher.NewRtmpPusher("rtmp://a.rtmp.youtube.com/live2/9kvy-ypck-sa37-46qp-35bz")
+				pusher, err := rtmppusher.NewRtmpPusher(os.Getenv("rtmp_host"))
 				if err != nil {
 					panic(err)
 				}
@@ -116,8 +115,6 @@ func channel(c *gin.Context) {
 					videoTrack := incomingStream.GetVideoTracks()[0]
 
 					videoTrack.OnMediaFrame(func(frame []byte, timestamp uint64) {
-
-						fmt.Println("video frame ==========")
 						if len(frame) <= 4 {
 							return
 						}
@@ -132,7 +129,6 @@ func channel(c *gin.Context) {
 
 					audioTrack.OnMediaFrame(func(frame []byte, timestamp uint64) {
 
-						fmt.Println("audio frame ===== ", len(frame))
 						if len(frame) <= 4 {
 							return
 						}
@@ -150,12 +146,6 @@ func channel(c *gin.Context) {
 		}
 	}
 }
-
-type Channel struct {
-	que *pubsub.Queue
-}
-
-var channels = map[string]*Channel{}
 
 func index(c *gin.Context) {
 	fmt.Println("helloworld")

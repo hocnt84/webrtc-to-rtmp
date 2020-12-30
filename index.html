@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-<title> webrtc test  </title>
+<title> webrtc demo  </title>
 <style type="text/css">
 	.room {
 		cursor: pointer;
@@ -66,7 +66,11 @@
             //Play it
             removeVideoForStream(event.stream);
         };
-        socket = new WebSocket('ws://localhost:8000/channel');
+        let domain = window.location.origin.replace('http', 'ws')
+        if (window.location.protocol === 'https') {
+            domain = window.location.origin.replace('https', 'wss')
+        }
+        socket = new WebSocket(domain + '/channel');
 
         socket.onopen = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({
