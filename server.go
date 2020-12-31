@@ -96,7 +96,7 @@ func channel(c *gin.Context) {
 			for _, stream := range offer.GetStreams() {
 				incomingStream := transport.CreateIncomingStream(stream)
 
-				refresher := mediaserver.NewRefresher(5000)
+				refresher := mediaserver.NewRefresher(2000)
 				refresher.AddStream(incomingStream)
 
 				outgoingStream := transport.CreateOutgoingStream(stream.Clone())
@@ -115,6 +115,7 @@ func channel(c *gin.Context) {
 					videoTrack := incomingStream.GetVideoTracks()[0]
 
 					videoTrack.OnMediaFrame(func(frame []byte, timestamp uint64) {
+						fmt.Println("video frame ==========", len(frame))
 						if len(frame) <= 4 {
 							return
 						}
@@ -128,7 +129,7 @@ func channel(c *gin.Context) {
 					audioTrack := incomingStream.GetAudioTracks()[0]
 
 					audioTrack.OnMediaFrame(func(frame []byte, timestamp uint64) {
-
+						// fmt.Println("audio frame ==========", len(frame))
 						if len(frame) <= 4 {
 							return
 						}
@@ -162,6 +163,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Static("/public", "./public")
 	r.LoadHTMLFiles("./index.html")
 	r.GET("/channel", channel)
 	r.GET("/", index)
