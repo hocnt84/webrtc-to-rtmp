@@ -40,7 +40,7 @@
 
         let container;
         var socket;
-
+        var canvas;
         function addVideoForStream(stream,muted)
         {
             //Create new video element
@@ -63,7 +63,7 @@
             
             container = document.getElementById('container');
 
-            var canvas = new fabric.Canvas('c');
+            canvas = new fabric.Canvas('c');
             canvas.setDimensions({width: 960, height: 540})
             setInterval(() => {
                 canvas.renderAll();
@@ -81,10 +81,10 @@
                 //addVideoForStream(stream, true)
 
                 var video1El = document.getElementById('webcam');
-
+                
                 var video1 = new fabric.Image(video1El, {
-                    left: 200,
-                    top: 100,
+                    left: canvas.width/2,
+                    top: canvas.height/2,
                     angle: 0,
                     originX: 'center',
                     originY: 'center',
@@ -96,6 +96,7 @@
                 canvas.add(video1)
                 video1.moveTo(0)
                 video1.getElement().play()
+                // canvas.calcOffset()
                 setTimeout(() => {
                 var pc = new RTCPeerConnection();
         
